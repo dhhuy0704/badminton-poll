@@ -79,10 +79,10 @@
                         <input id="go_with" name="go_with" type="radio" class="form-check-input" value='2' required="">
                         <label class="form-check-label" for="go_with">Đi 2 người</label>
                     </div>
-                    <div class="form-check">
+                    <!--<div class="form-check">
                         <input id="go_with" name="go_with" type="radio" class="form-check-input" value='3' required="">
                         <label class="form-check-label" for="go_with">Đi 3 người</label>
-                    </div>
+                    </div>-->
                 </div>
 
                 <small class="text-muted text-center">*Nếu bạn muốn đăng ký cho số người nhiều hơn ở trên, xin hãy liên lạc với người đặt sân trước ngày mở poll</small>
