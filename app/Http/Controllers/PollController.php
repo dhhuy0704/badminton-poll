@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\MemberVote;
+use Illuminate\Support\Carbon;
+use App\Models\Vote;
 use App\Models\Poll;
 use App\Models\Player;
 
@@ -18,7 +19,7 @@ class PollController extends AppController
     public function index()
     {
         $latestPoll = Poll::getLatestOpenPoll();
-        $allPlayer  = Player::getAllPlayers();
+        $allPlayer  = Player::getAllAvailablePlayers();
 
         return view('index', [
             'allPlayer'  => $allPlayer,
@@ -26,47 +27,6 @@ class PollController extends AppController
         ]);
     }
 
-    /**
-     * Get data from form submission and store it in the database.s
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function vote(Request $request)
-    {
-
-        $validatedData = $request->validate([
-            'poll_uuid'   => 'required|uuid|exists:polls,uuid',
-            'player_uuid' => 'required|uuid|exists:players,uuid',
-            'go_with'     => 'required|integer|min:1|max:3',
-        ]);
-
-        $MemberVote                 = new MemberVote();
-        $MemberVote->uuid           = (string) Str::uuid();
-        $MemberVote->player_uuid    = $validatedData['player_uuid'];
-        $MemberVote->number_go_with = $validatedData['go_with'];
-        $MemberVote->poll_uuid      = $validatedData['poll_uuid'];
-        $MemberVote->vote_date      = now();
-
-        // Check if the player has already voted for the same poll
-        $existingVote = MemberVote::where('poll_uuid', $validatedData['poll_uuid'])
-            ->where('player_uuid', $validatedData['player_uuid'])
-            ->first();
-
-        if ($existingVote) {
-            return redirect()->back()->withErrors(['player_uuid' => 'You have already voted for this poll.']);
-        }
-
-        $vote_status = $MemberVote->save();
-
-        // Auto close poll if the number of votes reaches the maximum number of courts
-        $totalGoWith = MemberVote::where('poll_uuid', $validatedData['poll_uuid'])->sum('number_go_with');
-        if ($totalGoWith >= config('constants.MAX_NUMBER_COURT_REGISTER')) {
-            Poll::where('uuid', $validatedData['poll_uuid'])->update(['closed_date' => now()]);
-        }
-
-        return $this->latest_list();
-    }
 
     /**
      * Show the form for creating a new poll.
@@ -76,42 +36,28 @@ class PollController extends AppController
      */
     public function create(Request $request)
     {
-        $constants = config('constants');
-        $defaultPricePerCourtPerHour = $constants['DEFAULT_PRICE_PER_COURT_PER_HOUR'];
-        $defaultHoursPerDay          = $constants['DEFAULT_HOURS_PER_DAY'];
-        $defaultDayOfWeek            = $constants['DEFAULT_DAY_OF_WEEK'];
-        $defaultNumberCourt          = $constants['DEFAULT_NUMBER_COURT'];
-
-        $defaultPrice                = $defaultNumberCourt * $defaultPricePerCourtPerHour * $defaultHoursPerDay;
-        $saveMoneyMode               = $request->input('save_money_mode', 1);
-
-        if ($saveMoneyMode === 1) {
-            /**
-             * At default, we play 1 court in 3 hours and 1 court in 2 hours to save money.
-             * If members registered max
-             */
-            $maxSavedHoursAllCourt = 1 * $defaultPricePerCourtPerHour;
-            $defaultPrice = ($defaultPrice - $maxSavedHoursAllCourt) * (1 + $constants['PROVINCE_TAX_RATE']);
-        }
-
-        $request->merge([
-            'poll_date'             => $request->input('poll_date', now()->next($defaultDayOfWeek)->toDateString()),
-            'expected_number_court' => $request->input('expected_number_court', $defaultNumberCourt),
-            'expected_price'        => $request->input('expected_price', $defaultPrice),
-        ]);
 
         $validatedData = $request->validate([
-            'poll_date'                => 'required|date',
-            'expected_number_court'    => 'required|integer|min:1',
-            'expected_price'           => 'required|numeric|min:0',
+            'poll_date'  => 'nullable|date',
+            'total_hour' => 'nullable|integer|min:1',
+            'unit_price' => 'nullable|numeric|min:0',
         ]);
 
-        $poll                        = new Poll();
-        $poll->uuid                  = (string) Str::uuid();
-        $poll->poll_date             = $validatedData['poll_date'];
-        $poll->save_money_mode       = $saveMoneyMode;
-        $poll->expected_number_court = $validatedData['expected_number_court'];
-        $poll->expected_price        = $validatedData['expected_price'];
+        $defaultPollDate = now()->next(config('constants.DEFAULT_DAY_OF_WEEK'))->startOfDay();
+        $validatedData['poll_date'] = $request->input('poll_date') ? Carbon::parse($request->input('poll_date'))->startOfDay() : $defaultPollDate;
+
+        $validatedData['total_hours'] = $validatedData['total_hour'] ?? config('constants.DEFAULT_TOTAL_HOURS');
+        $validatedData['total_court'] = config('constants.DEFAULT_TOTAL_COURT');
+        $unitPrice = $validatedData['unit_price'] ?? config('constants.DEFAULT_PRICE_PER_COURT_PER_HOUR');
+        $totalPriceBeforeTax = $validatedData['total_hours'] * $unitPrice;
+        $validatedData['total_price'] = $totalPriceBeforeTax + ($totalPriceBeforeTax * config('constants.PROVINCE_TAX_RATE'));
+
+        $poll              = new Poll();
+        $poll->uuid        = (string) Str::uuid();
+        $poll->poll_date   = $validatedData['poll_date'];
+        $poll->total_court = $validatedData['total_court'];
+        $poll->total_hours = $validatedData['total_hours'];
+        $poll->total_price = $validatedData['total_price'];
         $poll->save();
 
         return $poll->exists ? true : false;
@@ -121,9 +67,9 @@ class PollController extends AppController
     {
         $latestPoll = Poll::getLatestPoll();
 
-        $votes = MemberVote::where('poll_uuid', $latestPoll->uuid)
-            ->join('players', 'member_votes.player_uuid', '=', 'players.uuid')
-            ->select('players.name as player_name', 'member_votes.number_go_with')
+        $votes = Vote::where('poll_uuid', $latestPoll->uuid)
+            ->join('players', 'votes.player_uuid', '=', 'players.uuid')
+            ->select('players.name as player_name', 'votes.slot', 'votes.uuid')
             ->get();
 
         return view('latest_list', [

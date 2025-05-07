@@ -9,11 +9,13 @@
 </div>
 @endif
 
-<div class="row g-5">
+<div class="row g-3">
     <div class="col-md-12 col-lg-6 mx-auto">
         @if (empty($latestPoll))
+
             <div class="alert alert-danger text-center" role="alert">
-                Không có poll nào hiện tại đang mở <br>hoặc đã đóng vì đủ số lượng tham gia, hẹn bạn tuần sau <br>
+                Không có poll nào hiện tại đang mở <br>hoặc đã đóng vì đủ số lượng tham gia, <br>hẹn bạn tuần sau <br><br>
+                Poll tiếp theo sẽ mở vào <strong>9pm Chủ Nhật</strong> hằng tuần
             </div>
 
             <div class="text-center mt-4 mb-4">
@@ -24,28 +26,22 @@
             @php
                 $pollUuid        = $latestPoll->uuid;
                 $pollDate        = $latestPoll ? \Carbon\Carbon::parse($latestPoll->poll_date)->locale('vi')->isoFormat('dddd DD/MM/YYYY') : 'N/A';
-                $number_court    = $latestPoll->expected_number_court;
-                $price           = $latestPoll->expected_price;
+                $number_court    = $latestPoll->total_court;
                 $totalRegistered = $latestPoll->total_registered;
             @endphp
 
             <h4 class="mb-3 text-center">Thông tin đặt sân:</h4>
-            <div class="alert alert-info text-center" role="alert">
-                <p>Nếu bạn lần đầu đặt sân, xin vui lòng đọc kỹ <a href="/rule">Nội Quy Nhóm</a></p>
+            <div class="alert alert-warning text-center" role="alert">
+                <p>Nếu bạn lần đầu đặt sân, xin vui lòng đọc kỹ <br><a href="/rule">Nội Quy Nhóm</a></p>
                 Ngày <strong>{{ $pollDate }}</strong>, <br>
-                @if ($latestPoll->save_money_mode == 1)
-                    01 sân (6pm - 9pm) & 01 sân (7pm - 9pm) <br>
-                @else
-                    02 sân (6pm - 9pm) <br>
-                @endif
-                <strong>Số lượng sân:</strong> 0{{ $number_court }} sân<br>
-                <strong>Tổng số tiền ước tính: <span class="text-danger">${{ $price }}</span></strong> <br>
+
+                <strong>số lượng sân:</strong> {{ $number_court }} sân<br>
 
                 @if ($totalRegistered > 0)
                     @php
-                        $statusClass = $totalRegistered >= config('constants.MAX_NUMBER_COURT_REGISTER') ? 'text-danger' : 'text-success';
+                        $statusClass = $totalRegistered >= config('constants.MAX_MEMBER_REGISTER') ? 'text-danger' : 'text-success';
                     @endphp
-                    Hiện đã có <strong><span class="{{ $statusClass }}">{{ $totalRegistered }}</span></strong> chỗ được đặt<br>
+                    Hiện đã có <strong><span class="{{ $statusClass }}">{{ $totalRegistered }}/{{ config('constants.MAX_MEMBER_REGISTER') }}</span></strong> chỗ được đặt<br>
                 @else
                     <strong><span class="text-success">Chưa có ai đăng ký</span></strong> <br>
                 @endif
@@ -72,11 +68,11 @@
 
                 <div class="my-3 px-4">
                     <div class="form-check">
-                        <input id="go_with" name="go_with" type="radio" class="form-check-input" value='1' checked="" required="">
+                        <input id="go_with" name="slot" type="radio" class="form-check-input" value='1' checked="" required="">
                         <label class="form-check-label" for="go_with">Đi mình ên</label>
                     </div>
                     <div class="form-check">
-                        <input id="go_with" name="go_with" type="radio" class="form-check-input" value='2' required="">
+                        <input id="go_with" name="slot" type="radio" class="form-check-input" value='2' required="">
                         <label class="form-check-label" for="go_with">Đi 2 người</label>
                     </div>
                     <!--<div class="form-check">
@@ -113,7 +109,7 @@
                                         document.getElementById('modal_player_name').textContent = selectedOption.text || 'Chưa chọn';
                                     });
 
-                                    document.querySelectorAll('input[name="go_with"]').forEach(function (radio) {
+                                    document.querySelectorAll('input[name="slot"]').forEach(function (radio) {
                                         radio.addEventListener('change', function () {
                                             document.getElementById('modal_go_with').textContent = this.value + ' người';
                                         });
@@ -123,7 +119,7 @@
                                     const playerNameSelect = document.getElementById('player');
                                     const selectedOption = playerNameSelect.options[playerNameSelect.selectedIndex];
                                     document.getElementById('modal_player_name').textContent = selectedOption.text || 'Chưa chọn';
-                                    const selectedGoWith = document.querySelector('input[name="go_with"]:checked');
+                                    const selectedGoWith = document.querySelector('input[name="slot"]:checked');
                                     document.getElementById('modal_go_with').textContent = selectedGoWith ? selectedGoWith.value + ' người' : 'Chưa chọn';
                                 </script>
                             </div>

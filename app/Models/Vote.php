@@ -4,8 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MemberVote extends Model
+class Vote extends Model
 {
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'uuid';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The data type of the primary key.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
     /**
      * The "booted" method of the model.
      *
@@ -13,8 +35,8 @@ class MemberVote extends Model
      */
     protected static function booted()
     {
-        static::creating(function ($memberVote) {
-            if (!isset($memberVote->poll_uuid)) {
+        static::creating(function ($vote) {
+            if (!isset($vote->poll_uuid)) {
                 throw new \Exception('poll_uuid is required.');
             }
         });
@@ -35,7 +57,7 @@ class MemberVote extends Model
      *
      * @var string
      */
-    protected $table = 'member_votes';
+    protected $table = 'votes';
 
     /**
      * The attributes that are mass assignable.
@@ -46,7 +68,7 @@ class MemberVote extends Model
         'player_name',
         'number_go_with',
         'poll_uuid',
-        'vote_date',
+        'voted_date',
         'individual_price',
     ];
 

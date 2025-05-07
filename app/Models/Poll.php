@@ -26,6 +26,7 @@ class Poll extends Model
      * @var string
      */
     protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -33,43 +34,41 @@ class Poll extends Model
      */
     protected $fillable = [
         'poll_date',
-        'expected_number_court',
-        'expected_price',
-        'actual_number_court',
-        'actual_price',
-        'number_member_registered',
+        'total_court',
+        'total_price',
+        'total_hours',
         'closed_date',
     ];
 
     /**
-     * Get the member votes associated with the poll.
+     * Get the votes associated with the poll.
      */
-    public function memberVotes()
+    public function Votes()
     {
-        return $this->hasMany(MemberVote::class);
+        return $this->hasMany(Vote::class);
     }
 
     /**
-     * Get the latest poll where closed_date is null and count total number_go_with in member_votes table.
+     * Get the latest poll where closed_date is null and count total slot in votes table.
      *
      * @return \App\Models\Poll|null
      */
     public static function getLatestOpenPoll()
     {
-        return self::withSum('memberVotes as total_registered', 'number_go_with')
+        return self::withSum('Votes as total_registered', 'slot')
             ->whereNull('closed_date')
             ->latest('poll_date')
             ->first();
     }
 
     /**
-     * Get the latest poll where closed_date is null and count total number_go_with in member_votes table.
+     * Get the latest poll where closed_date is null and count total slot in votes table.
      *
      * @return \App\Models\Poll|null
      */
     public static function getLatestPoll()
     {
-        return self::withSum('memberVotes as total_registered', 'number_go_with')
+        return self::withSum('Votes as total_registered', 'slot')
             ->latest('poll_date')
             ->first();
     }

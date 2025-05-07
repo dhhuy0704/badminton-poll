@@ -3,32 +3,33 @@
 @section('title', 'Latest Vote List')
 
 @section('content')
+
 <div class="row g-5">
     <div class="col-md-12 col-lg-6 mx-auto">
         @if (isset($latestPoll))
             @php
                 $pollDate        = \Carbon\Carbon::parse($latestPoll->poll_date)->locale('vi')->isoFormat('dddd DD/MM/YYYY');
-                $number_court    = $latestPoll->expected_number_court;
-                $price           = $latestPoll->expected_price;
+                $number_court    = $latestPoll->total_court;
+                $price           = $latestPoll->total_price;
                 $totalRegistered = $latestPoll->total_registered;
+                $is_poll_open    = is_null($latestPoll->closed_date) ? true : false;
+
+                $statusClass = 'success';
+                $statusText  = 'POLL ĐANG MỞ';
+
+                if ($is_poll_open === false) {
+                    $statusClass = 'danger';
+                    $statusText  = 'POLL ĐÃ ĐÓNG';
+                }
             @endphp
 
-            <div class="alert alert-info text-center" role="alert">
+            <div class="alert alert-{{ $statusClass }} text-center" role="alert">
                 <h4>Thông tin đặt sân:</h4>
                 Ngày <strong>{{ $pollDate }}</strong>, <br>
-                @if ($latestPoll->save_money_mode == 1)
-                    01 sân (6pm - 9pm) & 01 sân (7pm - 9pm) <br>
-                @else
-                    02 sân (6pm - 9pm) <br>
-                @endif
-                <strong>Số lượng sân:</strong> 0{{ $number_court }} sân<br>
-                <strong>Tổng số tiền ước tính: <span class="text-danger">${{ $price }}</span></strong> <br>
 
-                @if (is_null($latestPoll->closed_date))
-                    <span class="text-success">Poll đang mở</span>
-                @else
-                    <span class="text-danger">Poll đã đóng</span>
-                @endif
+                <strong>Số lượng sân:</strong> {{ $number_court }} sân<br>
+                <br>
+                <span class="text-{{ $statusClass }}"><strong>{{ $statusText }}</strong></span>
             </div>
         @endif
 
@@ -46,6 +47,7 @@
                         <th>Thành viên</th>
                         <th>Số lượng chỗ</th>
                         <th>Tiền sân sẽ đóng</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,13 +59,44 @@
                         @foreach($votes as $vote)
                             <tr>
                                 <td>{{ $vote->player_name }}</td>
-                                <td>{{ $vote->number_go_with }}</td>
-                                <td>${{ number_format(ceil($pricePerVote * $vote->number_go_with * 100) / 100, 2) }}</td>
+                                <td>{{ $vote->slot }}</td>
+                                <td>${{ number_format(ceil($pricePerVote * $vote->slot * 100) / 100, 2) }}</td>
+                                <td>
+                                    @if ($is_poll_open)
+                                        <form action="{{ url('cancel-vote') }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="vote_uuid" value="{{ $vote->uuid }}">
+                                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmCancelModal-{{ $vote->uuid }}">Rút</button>
+
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="confirmCancelModal-{{ $vote->uuid }}" tabindex="-1" aria-labelledby="confirmCancelModalLabel-{{ $vote->uuid }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmCancelModalLabel-{{ $vote->uuid }}">Rút vote?</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Không có bấm lộn phải không?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                            <button type="submit" class="btn btn-danger">Rút lui</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    @else
+                                        <button type="button" class="btn btn-secondary btn-sm" disabled>Rút</button>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                         <tr>
-                            <td><strong>Tổng số đăng ký</strong></td>
+                            <td><strong>Tổng</strong></td>
                             <td><strong>{{ $totalRegistered }}</strong></td>
+                            <td><strong>${{ $price }}</strong></td>
                             <td></td>
                         </tr>
                     @endif

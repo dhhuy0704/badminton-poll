@@ -51,7 +51,7 @@ class Player extends Model
      *
      * @return \Illuminate\Support\Collection
      */
-    public static function getAllPlayers()
+    public static function getAllAvailablePlayers()
     {
         $latestPoll = Poll::whereNull('closed_date')->latest()->first();
 
@@ -59,7 +59,7 @@ class Player extends Model
             return collect(); // Return an empty collection if no active poll exists
         }
 
-        $votedPlayerUuids = $latestPoll->memberVotes()->pluck('player_uuid');
+        $votedPlayerUuids = $latestPoll->Votes()->pluck('player_uuid');
 
         return self::whereNotIn('uuid', $votedPlayerUuids)
             ->orderBy('name', 'asc')

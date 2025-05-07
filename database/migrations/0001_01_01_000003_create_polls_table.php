@@ -16,22 +16,19 @@ return new class extends Migration
         Schema::create('polls', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->timestamp('poll_date');
-            $table->integer('expected_number_court');
-            $table->decimal('expected_price', 8, 2);
-            $table->boolean('save_money_mode')->default(true);
-            $table->integer('actual_number_court')->default(0);
-            $table->decimal('actual_price', 8, 2)->default(0);
-            $table->integer('number_member_registered')->default(0);
+            $table->integer('total_court');
+            $table->integer('total_hours');
+            $table->decimal('total_price', 8, 2);
             $table->timestamp('closed_date')->nullable();
             $table->timestampsTz();
         });
 
-        Schema::create('member_votes', function (Blueprint $table) {
+        Schema::create('votes', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->string('player_uuid');
             $table->string('poll_uuid');
-            $table->integer('number_go_with')->default(0);
-            $table->timestamp('vote_date');
+            $table->integer('slot')->default(0);
+            $table->timestamp('voted_date');
             $table->decimal('individual_price', 8, 2)->default(0);
             $table->timestampsTz();
         });
@@ -45,6 +42,6 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('polls');
-        Schema::dropIfExists('member_votes');
+        Schema::dropIfExists('votes');
     }
 };
