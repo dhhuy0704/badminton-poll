@@ -138,18 +138,19 @@
                 </script>
             </form>
 
+            <script>
+                const confirmButton = document.getElementById('confirm_submit');
+
+                playerNameSelect.addEventListener('change', function () {
+                    confirmButton.disabled = !this.value;
+                });
+
+                // Initialize button state on page load
+                confirmButton.disabled = !playerNameSelect.value;
+            </script>
         @endif
 
     </div>
 </div>
-<script>
-    const confirmButton = document.getElementById('confirm_submit');
 
-    playerNameSelect.addEventListener('change', function () {
-        confirmButton.disabled = !this.value;
-    });
-
-    // Initialize button state on page load
-    confirmButton.disabled = !playerNameSelect.value;
-</script>
 @endsection
