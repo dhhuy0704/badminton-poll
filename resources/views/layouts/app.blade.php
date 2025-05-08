@@ -5,13 +5,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+
     <meta property="og:locale" content="vi_VN">
     <meta property="og:type" content="wesbite">
     <meta property="og:title" content="{{ config('app.name') }} - @yield('title')">
     <meta property="og:description" content="Portal đặt sân cầu lông cho Vietfun Badminton YYC">
 
     <meta property="og:site_name" content="Vietfun Badminton Poll">
-    <meta property="og:image" content="{{ asset('images/logo.png') }}">
+    <meta property="og:image" content="{{ asset('images/fb-preview.jpg') }}">
     <meta property="og:image:width" content="150">
     <meta property="og:image:height" content="auto">
     <meta property="og:image:type" content="image/png">
