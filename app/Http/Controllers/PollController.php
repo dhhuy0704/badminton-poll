@@ -63,6 +63,12 @@ class PollController extends AppController
         return $poll->exists ? true : false;
     }
 
+    /**
+     * Get list of players voted for the latest poll
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function latest_list()
     {
         $latestPoll = Poll::getLatestPoll();
@@ -78,4 +84,17 @@ class PollController extends AppController
         ]);
     }
 
+    /**
+     * Close the current open poll
+     */
+    public function closePoll()
+    {
+        $latestPoll = Poll::getLatestOpenPoll();
+        $latestPoll->closed_date = now();
+        
+        if ($latestPoll->save()) {
+            return true;
+        }
+        return false;
+    }
 }

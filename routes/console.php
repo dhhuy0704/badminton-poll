@@ -30,3 +30,14 @@ function ($poll_date = null, $total_hour = null, $unit_price = null) {
     $this->info('Poll created successfully.');
 
 })->purpose('Create a new poll');
+
+Artisan::command('poll:close-latest', function () {
+
+    $controller = app(\App\Http\Controllers\PollController::class);
+
+    if (!$controller->closePoll()) {
+        $this->error('Failed to close poll.');
+        return false;
+    }
+    $this->info('Poll closed successfully.');
+})->purpose('Close the latest poll');
