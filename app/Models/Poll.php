@@ -41,6 +41,16 @@ class Poll extends Model
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'poll_date'   => 'datetime',
+        'closed_date' => 'datetime',
+    ];
+
+    /**
      * Get the votes associated with the poll.
      */
     public function Votes()
