@@ -72,6 +72,11 @@
                 @endif
 
                 @yield('content')
+
+                <footer class="my-5 pt-5 text-muted text-center text-small">
+                    <p class="mb-1">© 2025 {{ config('app.name') }}</p>
+                    Version: {{ config('app.version') }} | Developed by <a href="https://tommydo.ca">TommyDo.ca</a>
+                </footer>
             </main>
         </div>
     </div>
