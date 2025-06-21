@@ -4,7 +4,7 @@ return [
     /**
      * Maximum number of courts that can be registered
      */
-    'MAX_MEMBER_REGISTER' => 14,
+    'MAX_MEMBER_REGISTER' => 16,
 
     /**
      * Before tax price per court per hour

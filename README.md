@@ -1,61 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Badminton Poll
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<img src="public/images/logo.png" width="200px">
 
-## About Laravel
+![Built with Laravel](https://img.shields.io/badge/Built%20with-Laravel-red)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Badminton Poll is a web application designed for badminton groups to organize court bookings and track player participation. It allows administrators to create polls for upcoming play dates, manage court bookings, and enables players to indicate their availability.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✨ Features
 
-## Learning Laravel
+- **Poll Management**: Create, edit, close, and reopen polls for badminton sessions
+- **Player Registration**: Track player participation and generate player lists
+- **Cost Calculation**: Automatically calculate and distribute costs based on participation
+- **Admin Dashboard**: Complete overview of polls, players, and voting statistics
+- **Mobile-Friendly Interface**: Responsive design for desktop and mobile devices
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🏗️ System Architecture
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+The application follows Laravel's MVC architecture:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Models
 
-## Laravel Sponsors
+- **Poll**: Manages badminton session details (date, courts, hours, pricing)
+- **Player**: Handles player information and availability
+- **Vote**: Tracks player responses to polls
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Key Features
 
-### Premium Partners
+- UUID-based identification for secure data handling
+- Timestamp management for poll scheduling
+- Automated cost calculation and distribution
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+## 🛠️ Technical Details
 
-## Contributing
+### Database Structure
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **polls**: Stores session information (date, courts, hours, pricing, status)
+- **players**: Maintains player records
+- **votes**: Links players to polls with voting status
 
-## Code of Conduct
+### Configuration Constants
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Maximum players: 16
+- Default court price: $30/hour
+- Default booking: 2 courts for 5 hours
+- Default play day: Saturday
+- Tax rate: 5%
 
-## Security Vulnerabilities
+## 🔧 Installation
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Step 1: Clone the repository
 
-## License
+```bash
+git clone https://your-repository-url/badminton-poll.git
+cd badminton-poll
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Step 2: Install dependencies
+
+```bash
+composer install
+npm install
+```
+
+### Step 3: Set up environment
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### Step 4: Configure database in .env file
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=badminton_poll
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### Step 5: Run migrations
+
+```bash
+php artisan migrate
+```
+
+### Step 6: Compile assets
+
+```bash
+npm run dev
+```
+
+### Step 7: Start the server
+
+```bash
+php artisan serve
+```
+
+## 🚀 Usage
+
+### User Interface
+
+- **Home**: View and participate in the latest poll
+- **Latest List**: See current participant list
+- **Rule**: Review participation rules
+
+### Admin Panel
+
+- Access the admin dashboard at `/admin/dashboard`
+- Create and manage polls
+- View participation statistics
+- Close polls and calculate costs
+
+## ☕️ Buy me a coffee
+
+https://ko-fi.com/tommydo
+
+## 📝 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
