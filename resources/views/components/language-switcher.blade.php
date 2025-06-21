@@ -39,7 +39,7 @@
         </form>
     @else
         <form action="{{ route('language.switch', 'en') }}" method="GET">
-            <button type="submit" class="{{ app()->getLocale() == 'en' ? 'active' : '' }}">See In English</button>
+            <button type="submit" class="{{ app()->getLocale() == 'en' ? 'active' : '' }}">View In English</button>
         </form>
     @endif
 

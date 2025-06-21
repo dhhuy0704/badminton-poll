@@ -19,7 +19,7 @@ class LanguageController extends Controller
     {
         // Validate locale against available locales
         if (!in_array($locale, ['en', 'vi'])) {
-            $locale = 'en';
+            $locale = 'vi';
         }
         
         // Store the locale in a cookie that lasts for a year
