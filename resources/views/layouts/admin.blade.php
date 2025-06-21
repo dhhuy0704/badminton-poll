@@ -40,8 +40,13 @@
                 <div class="position-sticky pt-3 sidebar-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/admin/dashboard">
-                                Dashboard
+                            <a class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}" href="/admin/dashboard">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('admin/players') ? 'active' : '' }}" href="/admin/players">
+                                <i class="bi bi-people"></i> Players
                             </a>
                         </li>
                     </ul>

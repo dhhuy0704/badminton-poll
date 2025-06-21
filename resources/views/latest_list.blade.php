@@ -53,12 +53,16 @@
                 <tbody>
                     @if($votes->isEmpty())
                         <tr>
-                            <td colspan="2" class="text-center">No votes available</td>
+                            <td colspan="4" class="text-center">No votes available</td>
                         </tr>
                     @else
                         @foreach($votes as $vote)
                             <tr>
-                                <td>{{ $vote->player_name }}</td>
+                                <td>
+                                    <a href="{{ route('player.profile', $vote->player_uuid) }}" class="text-decoration-none">
+                                        {{ $vote->player_name }}
+                                    </a>
+                                </td>
                                 <td>{{ $vote->slot }}</td>
                                 <td>${{ number_format(ceil($pricePerVote * $vote->slot * 100) / 100, 2) }}</td>
                                 <td>

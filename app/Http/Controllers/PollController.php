@@ -95,7 +95,7 @@ class PollController extends AppController
 
         $votes = Vote::where('poll_uuid', $latestPoll->uuid)
             ->join('players', 'votes.player_uuid', '=', 'players.uuid')
-            ->select('players.name as player_name', 'votes.slot', 'votes.uuid')
+            ->select('players.name as player_name', 'votes.slot', 'votes.uuid', 'votes.player_uuid')
             ->get();
 
         return view('latest_list', [
