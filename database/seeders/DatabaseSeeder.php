@@ -19,5 +19,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+        
+        // Call the PollsAndVotesSeeder to generate historical data
+        $this->call([
+            PollsAndVotesSeeder::class,
+        ]);
     }
 }

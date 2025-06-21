@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -7,10 +7,10 @@
 
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
-    <meta property="og:locale" content="vi_VN">
+    <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ config('app.name') }} - Admin - @yield('title')">
-    <meta property="og:description" content="Admin Portal for {{ config('app.name') }}">
+    <meta property="og:description" content="{{ __('admin.admin_portal') }} {{ config('app.name') }}">
 
     <meta property="og:site_name" content="Vietfun Badminton Poll - Admin">
     <meta property="og:image" content="{{ asset('images/fb-preview.jpg') }}">
@@ -26,10 +26,10 @@
 
 <body>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="/admin/dashboard">{{ config('app.name') }} Admin</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="/admin/dashboard">{{ config('app.name') }} {{ __('admin.dashboard') }}</a>
         <div class="navbar-nav">
             <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="/">Back to Site</a>
+                <a class="nav-link px-3" href="/">{{ __('general.back_to_site') }}</a>
             </div>
         </div>
     </header>
@@ -40,8 +40,13 @@
                 <div class="position-sticky pt-3 sidebar-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/admin/dashboard">
-                                Dashboard
+                            <a class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}" href="/admin/dashboard">
+                                <i class="bi bi-speedometer2"></i> {{ __('admin.dashboard') }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('admin/players') ? 'active' : '' }}" href="/admin/players">
+                                <i class="bi bi-people"></i> {{ __('admin.players') }}
                             </a>
                         </li>
                     </ul>
@@ -51,6 +56,9 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">@yield('title')</h1>
+                    <div class="ms-auto">
+                        @include('components.language-switcher')
+                    </div>
                 </div>
                 
                 @if (session('success'))
@@ -73,10 +81,10 @@
 
                 @yield('content')
 
-                <footer class="my-5 pt-5 text-muted text-center text-small">
-                    <p class="mb-1">© 2025 {{ config('app.name') }}</p>
-                    Version: {{ config('app.version') }} | Developed by <a href="https://tommydo.ca">TommyDo.ca</a>
-                </footer>
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">© 2025 {{ config('app.name') }}</p>
+            {{ __('general.version') }}: {{ config('app.version') }} | {{ __('general.created_by') }} <a href="https://tommydo.ca">TommyDo.ca</a>
+        </footer>
             </main>
         </div>
     </div>

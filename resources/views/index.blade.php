@@ -5,7 +5,7 @@
 @section('content')
 @if (isset($voteStatus) && $voteStatus === true)
 <div class="alert alert-success text-center" role="alert">
-    Bạn đã đăng ký thành công!
+    {{ __('poll.registration_success') }}
 </div>
 @endif
 
@@ -14,41 +14,41 @@
         @if (empty($latestPoll))
 
             <div class="alert alert-danger text-center" role="alert">
-                Không có poll nào hiện tại đang mở <br>hoặc đã đóng vì đủ số lượng tham gia, <br>hẹn bạn tuần sau <br><br>
-                Poll tiếp theo sẽ mở vào <strong>9pm Chủ Nhật</strong> hằng tuần
+                {!! __('poll.no_poll_available') !!} <br><br>
+                {!! __('poll.next_poll_opens') !!}
             </div>
 
             <div class="text-center mt-4 mb-4">
-                <a href="{{ url('latest-list') }}" class="">Xem danh sách tham gia lần cuối</a>
+                <a href="{{ url('latest-list') }}" class="">{{ __('poll.view_latest_list') }}</a>
             </div>
         @else
 
             @php
                 $pollUuid        = $latestPoll->uuid;
-                $pollDate        = $latestPoll ? \Carbon\Carbon::parse($latestPoll->poll_date)->locale('vi')->isoFormat('dddd DD/MM/YYYY') : 'N/A';
+                $pollDate        = $latestPoll ? \Carbon\Carbon::parse($latestPoll->poll_date)->locale(app()->getLocale())->isoFormat('dddd DD/MM/YYYY') : 'N/A';
                 $number_court    = $latestPoll->total_court;
                 $totalRegistered = $latestPoll->total_registered;
             @endphp
 
-            <h4 class="mb-3 text-center">Thông tin đặt sân:</h4>
+            <h4 class="mb-3 text-center">{{ __('poll.booking_info') }}</h4>
             <div class="alert alert-warning text-center" role="alert">
-                <p>Nếu bạn lần đầu đặt sân, xin vui lòng đọc kỹ <br><a href="/rule">Nội Quy Nhóm</a></p>
-                Ngày <strong>{{ $pollDate }}</strong>, <br>
+                <p>{!! __('poll.first_time_note') !!}</p>
+                {{ __('poll.date') }} <strong>{{ $pollDate }}</strong>, <br>
 
-                <strong>số lượng sân:</strong> {{ $number_court }} sân<br>
+                <strong>{{ __('poll.number_of_courts') }}</strong> {{ $number_court }} {{ __('poll.courts') }}<br>
 
                 @if ($totalRegistered > 0)
                     @php
                         $statusClass = $totalRegistered >= config('constants.MAX_MEMBER_REGISTER') ? 'text-danger' : 'text-success';
                     @endphp
-                    Hiện đã có <strong><span class="{{ $statusClass }}">{{ $totalRegistered }}/{{ config('constants.MAX_MEMBER_REGISTER') }}</span></strong> chỗ được đặt<br>
+                    {!! __('poll.registered_slots', ['class' => $statusClass, 'current' => $totalRegistered, 'max' => config('constants.MAX_MEMBER_REGISTER')]) !!}<br>
                 @else
-                    <strong><span class="text-success">Chưa có ai đăng ký</span></strong> <br>
+                    {!! __('poll.no_registrations') !!}<br>
                 @endif
             </div>
 
             <div class="text-center mt-4 mb-4">
-                <a href="{{ url('latest-list') }}" class="">Xem danh sách tham gia</a>
+                <a href="{{ url('latest-list') }}" class="">{{ __('poll.view_latest_list') }}</a>
             </div>
 
             <form id="member_vote" class="needs-validation" action="{{ url('poll') }}" method="POST">
@@ -56,24 +56,24 @@
                 <input type="hidden" name="poll_uuid" value="{{ $pollUuid }}">
                 <div class="col-md-12">
                     <select class="form-select" id="player" name="player_uuid" required="">
-                        <option value="">Chọn tên của bạn</option>
+                        <option value="">{{ __('poll.choose_your_name') }}</option>
                         @foreach ($allPlayer as $id => $player)
                             <option value="{{ $id }}">{{ $player }}</option>
                         @endforeach
                     </select>
                     <div class="invalid-feedback">
-                        Xin hãy chọn tên đúng của bạn
+                        {{ __('poll.invalid_name_feedback') }}
                     </div>
                 </div>
 
                 <div class="my-3 px-4">
                     <div class="form-check">
                         <input id="go_with" name="slot" type="radio" class="form-check-input" value='1' checked="" required="">
-                        <label class="form-check-label" for="go_with">Đi mình ên</label>
+                        <label class="form-check-label" for="go_with">{{ __('poll.go_alone') }}</label>
                     </div>
                     <div class="form-check">
                         <input id="go_with" name="slot" type="radio" class="form-check-input" value='2' required="">
-                        <label class="form-check-label" for="go_with">Đi 2 người</label>
+                        <label class="form-check-label" for="go_with">{{ __('poll.going_with_two') }}</label>
                     </div>
                     <!--<div class="form-check">
                         <input id="go_with" name="go_with" type="radio" class="form-check-input" value='3' required="">
@@ -81,51 +81,57 @@
                     </div>-->
                 </div>
 
-                <small class="text-muted text-center">*Nếu bạn muốn đăng ký cho số người nhiều hơn ở trên, xin hãy liên lạc với người đặt sân trước ngày mở poll</small>
+                <small class="text-muted text-center">{{ __('poll.additional_members_note') }}</small>
 
                 <hr class="my-4">
 
-                <button class="w-100 btn btn-primary btn-lg mb-5" type="button" data-bs-toggle="modal" data-bs-target="#confirmation_modal">Đặt chỗ</button>
+                <button class="w-100 btn btn-primary btn-lg mb-5" type="button" data-bs-toggle="modal" data-bs-target="#confirmation_modal">{{ __('poll.booking') }}</button>
 
                 <!-- Confirmation Modal -->
                 <div class="modal fade" id="confirmation_modal" tabindex="-1" aria-labelledby="confirmation_modal_label" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="confirmation_modal_label">Xác nhận đặt chỗ</h5>
+                                <h5 class="modal-title" id="confirmation_modal_label">{{ __('poll.confirm_booking') }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <small class="text-muted text-center">Lưu ý nè! Nếu poll đóng, bạn sẽ phải đóng tiền phần của bạn cho dù bạn không đi được vì bất cứ lý do gì</small>
+                                <small class="text-muted text-center">{{ __('poll.booking_note') }}</small>
                                 <ul class="mt-3">
-                                    <li><strong>Tên người chơi:</strong> <span id="modal_player_name"></span></li>
-                                    <li><strong>Số người đi:</strong> <span id="modal_go_with"></span></li>
+                                    <li><strong>{{ __('poll.player_selection') }}</strong> <span id="modal_player_name"></span></li>
+                                    <li><strong>{{ __('poll.slots_selection') }}</strong> <span id="modal_go_with"></span></li>
                                 </ul>
-                                Có chắc chưa?
+                                {{ __('poll.are_you_sure') }}
 
                                 <script>
+                                    // Define translations for JavaScript use
+                                    const translations = {
+                                        notSelected: "{{ __('poll.not_selected') }}",
+                                        people: "{{ __('poll.people') }}"
+                                    };
+                                
                                     document.getElementById('player').addEventListener('change', function () {
                                         const selectedOption = this.options[this.selectedIndex];
-                                        document.getElementById('modal_player_name').textContent = selectedOption.text || 'Chưa chọn';
+                                        document.getElementById('modal_player_name').textContent = selectedOption.text || translations.notSelected;
                                     });
 
                                     document.querySelectorAll('input[name="slot"]').forEach(function (radio) {
                                         radio.addEventListener('change', function () {
-                                            document.getElementById('modal_go_with').textContent = this.value + ' người';
+                                            document.getElementById('modal_go_with').textContent = this.value + ' ' + translations.people;
                                         });
                                     });
 
                                     // Initialize modal content on page load
                                     const playerNameSelect = document.getElementById('player');
                                     const selectedOption = playerNameSelect.options[playerNameSelect.selectedIndex];
-                                    document.getElementById('modal_player_name').textContent = selectedOption.text || 'Chưa chọn';
+                                    document.getElementById('modal_player_name').textContent = selectedOption.text || translations.notSelected;
                                     const selectedGoWith = document.querySelector('input[name="slot"]:checked');
-                                    document.getElementById('modal_go_with').textContent = selectedGoWith ? selectedGoWith.value + ' người' : 'Chưa chọn';
+                                    document.getElementById('modal_go_with').textContent = selectedGoWith ? selectedGoWith.value + ' ' + translations.people : translations.notSelected;
                                 </script>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ê, để suy nghĩ lại</button>
-                                <button type="button" class="btn btn-primary" id="confirm_submit" disabled>Chắc rồi nha</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('poll.no_reconsider') }}</button>
+                                <button type="button" class="btn btn-primary" id="confirm_submit" disabled>{{ __('poll.yes_confirm') }}</button>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -7,10 +7,10 @@
 
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
-    <meta property="og:locale" content="vi_VN">
-    <meta property="og:type" content="wesbite">
+    <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <meta property="og:type" content="website">
     <meta property="og:title" content="{{ config('app.name') }} - @yield('title')">
-    <meta property="og:description" content="Portal đặt sân cầu lông cho Vietfun Badminton YYC">
+    <meta property="og:description" content="{{ __('general.og_description') }}">
 
     <meta property="og:site_name" content="Vietfun Badminton Poll">
     <meta property="og:image" content="{{ asset('images/fb-preview.jpg') }}">
@@ -82,6 +82,7 @@
                 <a href="{{ url('/') }}">
                     <img class="d-block mx-auto mb-4" src="{{ asset('images/logo.png') }}" alt="Logo" width="150" height="auto">
                 </a>
+                @include('components.language-switcher')
             </div>
 
             @yield('content')
@@ -90,12 +91,13 @@
 
         <footer class="my-5 pt-5 text-muted text-center text-small">
             <p class="mb-1">© 2025 {{ config('app.name') }}</p>
-            Version: {{ config('app.version') }} | Developed by <a href="https://tommydo.ca">TommyDo.ca</a>
+            {{ __('general.version') }}: {{ config('app.version') }} | {{ __('general.created_by') }} <a href="https://tommydo.ca">TommyDo.ca</a>
         </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    @yield('scripts')
 </body>
 
 </html>
