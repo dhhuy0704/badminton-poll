@@ -21,13 +21,15 @@ class AdminController extends Controller
         $totalPlayers = Player::count();
         $totalPolls = Poll::count();
         $totalVotes = Vote::count();
+        $today = now()->startOfDay();
         
         return view('admin.dashboard', [
             'latestPolls' => $latestPolls,
             'latestPollId' => $latestPollId,
             'totalPlayers' => $totalPlayers,
             'totalPolls' => $totalPolls,
-            'totalVotes' => $totalVotes
+            'totalVotes' => $totalVotes,
+            'today' => $today
         ]);
     }
 }

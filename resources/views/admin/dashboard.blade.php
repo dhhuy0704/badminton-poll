@@ -137,12 +137,17 @@
                                                     <input type="hidden" name="poll_uuid" value="{{ $poll->uuid }}">
                                                     <button type="submit" class="btn btn-sm btn-warning">Close Poll</button>
                                                 </form>
-                                            @elseif ($poll->closed_date && $poll->uuid === $latestPollId)
+                                            @elseif ($poll->closed_date && $poll->uuid === $latestPollId && $poll->poll_date->startOfDay() >= $today)
                                                 <form action="/admin/reopen-poll" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="poll_uuid" value="{{ $poll->uuid }}">
-                                                    <button type="submit" class="btn btn-sm btn-success">Reopen</button>
+                                                    <button type="submit" class="btn btn-sm btn-success" 
+                                                           data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                           title="Poll can only be reopened if the play date is in the future">Reopen</button>
                                                 </form>
+                                            @elseif ($poll->closed_date && $poll->uuid === $latestPollId && $poll->poll_date->startOfDay() < $today)
+                                                <span class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                                      title="Cannot reopen polls with past dates">Past date</span>
                                             @endif
                                         </div>
                                     </td>
