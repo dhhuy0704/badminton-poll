@@ -1,21 +1,21 @@
 @extends('layouts.admin')
 
-@section('title', 'Players')
+@section('title', __('admin.players'))
 
 @section('content')
     <!-- Players Stats -->
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="card text-bg-success mb-3">
-                <div class="card-header">Total Players</div>
+            <div class="card mb-3">
+                <div class="card-header">{{ __('admin.total_players') }}</div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $totalPlayers }}</h5>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card text-bg-info mb-3">
-                <div class="card-header">Active Players</div>
+            <div class="card mb-3">
+                <div class="card-header">{{ __('admin.active_players') }}</div>
                 <div class="card-body">
                     <h5 class="card-title">{{ $activeTotalPlayers }}</h5>
                 </div>
@@ -28,9 +28,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5>Active Players List</h5>
+                    <h5>{{ __('admin.active_players_list') }}</h5>
                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPlayerModal">
-                        <i class="bi bi-plus-circle"></i> Add New Player
+                        <i class="bi bi-plus-circle"></i> {{ __('admin.add_new_player') }}
                     </button>
                 </div>
                 <div class="card-body">
@@ -38,11 +38,11 @@
                         <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Created</th>
-                                    <th>Last Updated</th>
-                                    <th>Actions</th>
+                                    <th>{{ __('admin.name') }}</th>
+                                    <th>{{ __('admin.email') }}</th>
+                                    <th>{{ __('admin.created') }}</th>
+                                    <th>{{ __('admin.last_updated') }}</th>
+                                    <th>{{ __('admin.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,9 +53,9 @@
                                                 {{ $player->name }}
                                             </a>
                                         </td>
-                                        <td>{{ $player->email ?? 'Not provided' }}</td>
-                                        <td>{{ $player->created_at->format('M d, Y') }}</td>
-                                        <td>{{ $player->updated_at->format('M d, Y') }}</td>
+                                        <td>{{ $player->email ?? __('admin.not_provided') }}</td>
+                                        <td>{{ $player->created_at->format('Y-m-d') }}</td>
+                                        <td>{{ $player->updated_at->format('Y-m-d') }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn btn-sm btn-outline-primary" 
@@ -64,21 +64,21 @@
                                                    data-player-id="{{ $player->uuid }}"
                                                    data-player-name="{{ $player->name }}"
                                                    data-player-email="{{ $player->email }}">
-                                                    <i class="bi bi-pencil"></i> Edit
+                                                    <i class="bi bi-pencil"></i> {{ __('admin.edit') }}
                                                 </button>
                                                 <button type="button" class="btn btn-sm btn-outline-danger" 
                                                    data-bs-toggle="modal" 
                                                    data-bs-target="#deactivatePlayerModal"
                                                    data-player-id="{{ $player->uuid }}"
                                                    data-player-name="{{ $player->name }}">
-                                                    <i class="bi bi-person-x"></i> Deactivate
+                                                    <i class="bi bi-person-x"></i> {{ __('admin.deactivate') }}
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">No active players found.</td>
+                                        <td colspan="5" class="text-center">{{ __('admin.no_active_players') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -94,24 +94,24 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addPlayerModalLabel">Add New Player</h5>
+                    <h5 class="modal-title" id="addPlayerModalLabel">{{ __('admin.add_new_player') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/admin/players" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
+                            <label for="name" class="form-label">{{ __('admin.name') }}</label>
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email (optional)</label>
+                            <label for="email" class="form-label">{{ __('admin.email') }} ({{ __('general.optional') }})</label>
                             <input type="email" class="form-control" id="email" name="email">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Player</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('admin.add_new_player') }}</button>
                     </div>
                 </form>
             </div>
@@ -123,7 +123,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editPlayerModalLabel">Edit Player</h5>
+                    <h5 class="modal-title" id="editPlayerModalLabel">{{ __('admin.edit_player') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/admin/players/update" method="POST">
@@ -132,17 +132,17 @@
                     <div class="modal-body">
                         <input type="hidden" id="edit-player-id" name="player_id">
                         <div class="mb-3">
-                            <label for="edit-name" class="form-label">Name</label>
+                            <label for="edit-name" class="form-label">{{ __('admin.name') }}</label>
                             <input type="text" class="form-control" id="edit-name" name="name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit-email" class="form-label">Email (optional)</label>
+                            <label for="edit-email" class="form-label">{{ __('admin.email') }} ({{ __('general.optional') }})</label>
                             <input type="email" class="form-control" id="edit-email" name="email">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update Player</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('admin.save_changes') }}</button>
                     </div>
                 </form>
             </div>
@@ -154,7 +154,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deactivatePlayerModalLabel">Deactivate Player</h5>
+                    <h5 class="modal-title" id="deactivatePlayerModalLabel">{{ __('admin.deactivate_player') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/admin/players/deactivate" method="POST">
@@ -162,11 +162,11 @@
                     @method('PUT')
                     <div class="modal-body">
                         <input type="hidden" id="deactivate-player-id" name="player_id">
-                        <p>Are you sure you want to deactivate <span id="player-name-to-deactivate" class="fw-bold"></span>? This player will no longer appear in polls.</p>
+                        <p>{{ __('general.are_you_sure_deactivate') }} <span id="player-name-to-deactivate" class="fw-bold"></span>? {{ __('general.player_will_not_appear') }}</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Deactivate Player</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                        <button type="submit" class="btn btn-danger">{{ __('admin.deactivate') }}</button>
                     </div>
                 </form>
             </div>
