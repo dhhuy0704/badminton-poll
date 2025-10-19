@@ -28,7 +28,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5>{{ __('admin.active_players_list') }}</h5>
+                    <h5>{{ __('admin.all_players_list') }}</h5>
                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPlayerModal">
                         <i class="bi bi-plus-circle"></i> {{ __('admin.add_new_player') }}
                     </button>
@@ -40,13 +40,14 @@
                                 <tr>
                                     <th>{{ __('admin.name') }}</th>
                                     <th>{{ __('admin.email') }}</th>
+                                    <th>{{ __('general.status') }}</th>
                                     <th>{{ __('admin.created') }}</th>
                                     <th>{{ __('admin.last_updated') }}</th>
                                     <th>{{ __('admin.actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($activePlayers as $player)
+                                @forelse ($allPlayers as $player)
                                     <tr>
                                         <td>
                                             <a href="{{ route('player.profile', $player->uuid) }}" class="text-decoration-none">
@@ -54,6 +55,13 @@
                                             </a>
                                         </td>
                                         <td>{{ $player->email ?? __('admin.not_provided') }}</td>
+                                        <td>
+                                            @if($player->is_active)
+                                                <span class="badge bg-success">{{ __('general.active') }}</span>
+                                            @else
+                                                <span class="badge bg-secondary">{{ __('general.inactive') }}</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $player->created_at->format('Y-m-d') }}</td>
                                         <td>{{ $player->updated_at->format('Y-m-d') }}</td>
                                         <td>
@@ -66,19 +74,29 @@
                                                    data-player-email="{{ $player->email }}">
                                                     <i class="bi bi-pencil"></i> {{ __('admin.edit') }}
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                   data-bs-toggle="modal" 
-                                                   data-bs-target="#deactivatePlayerModal"
-                                                   data-player-id="{{ $player->uuid }}"
-                                                   data-player-name="{{ $player->name }}">
-                                                    <i class="bi bi-person-x"></i> {{ __('admin.deactivate') }}
-                                                </button>
+                                                @if($player->is_active)
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                       data-bs-toggle="modal" 
+                                                       data-bs-target="#deactivatePlayerModal"
+                                                       data-player-id="{{ $player->uuid }}"
+                                                       data-player-name="{{ $player->name }}">
+                                                        <i class="bi bi-person-x"></i> {{ __('admin.deactivate') }}
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-outline-success" 
+                                                       data-bs-toggle="modal" 
+                                                       data-bs-target="#reactivatePlayerModal"
+                                                       data-player-id="{{ $player->uuid }}"
+                                                       data-player-name="{{ $player->name }}">
+                                                        <i class="bi bi-person-check"></i> {{ __('admin.reactivate') }}
+                                                    </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">{{ __('admin.no_active_players') }}</td>
+                                        <td colspan="6" class="text-center">{{ __('admin.no_players') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -172,6 +190,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Reactivate Player Modal -->
+    <div class="modal fade" id="reactivatePlayerModal" tabindex="-1" aria-labelledby="reactivatePlayerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reactivatePlayerModalLabel">{{ __('admin.reactivate_player') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/players/reactivate" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <input type="hidden" id="reactivate-player-id" name="player_id">
+                        <p>{{ __('general.are_you_sure_activate') }} <span id="player-name-to-reactivate" class="fw-bold"></span>? {{ __('general.player_will_appear') }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
+                        <button type="submit" class="btn btn-success">{{ __('admin.reactivate') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -206,6 +248,22 @@
                 
                 const modalIdField = deactivatePlayerModal.querySelector('#deactivate-player-id');
                 const playerNameSpan = deactivatePlayerModal.querySelector('#player-name-to-deactivate');
+                
+                modalIdField.value = playerId;
+                playerNameSpan.textContent = playerName;
+            });
+        }
+        
+        // Handle Reactivate Player Modal
+        const reactivatePlayerModal = document.getElementById('reactivatePlayerModal');
+        if (reactivatePlayerModal) {
+            reactivatePlayerModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const playerId = button.getAttribute('data-player-id');
+                const playerName = button.getAttribute('data-player-name');
+                
+                const modalIdField = reactivatePlayerModal.querySelector('#reactivate-player-id');
+                const playerNameSpan = reactivatePlayerModal.querySelector('#player-name-to-reactivate');
                 
                 modalIdField.value = playerId;
                 playerNameSpan.textContent = playerName;

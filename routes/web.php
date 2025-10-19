@@ -21,6 +21,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/players', [\App\Http\Controllers\AdminController::class, 'createPlayer']);
     Route::put('/players/update', [\App\Http\Controllers\AdminController::class, 'updatePlayer']);
     Route::put('/players/deactivate', [\App\Http\Controllers\AdminController::class, 'deactivatePlayer']);
+    Route::put('/players/reactivate', [\App\Http\Controllers\AdminController::class, 'reactivatePlayer']);
     Route::post('/create-poll', [\App\Http\Controllers\PollController::class, 'create']);
     Route::post('/close-poll', [\App\Http\Controllers\PollController::class, 'closePoll']);
     Route::post('/reopen-poll', [\App\Http\Controllers\PollController::class, 'reopenPoll']);

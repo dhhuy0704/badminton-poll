@@ -62,7 +62,8 @@ class Player extends Model
 
         $votedPlayerUuids = $latestPoll->Votes()->pluck('player_uuid');
 
-        return self::whereNotIn('uuid', $votedPlayerUuids)
+        return self::where('is_active', true)
+            ->whereNotIn('uuid', $votedPlayerUuids)
             ->orderBy('name', 'asc')
             ->pluck('name', 'uuid');
     }

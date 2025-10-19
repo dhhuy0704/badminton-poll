@@ -41,12 +41,12 @@ class AdminController extends Controller
      */
     public function players()
     {
-        $activePlayers = Player::getAllActivePlayers();
+        $allPlayers = Player::orderBy('name', 'asc')->get();
         $totalPlayers = Player::count();
         $activeTotalPlayers = Player::where('is_active', true)->count();
         
         return view('admin.players', [
-            'activePlayers' => $activePlayers,
+            'allPlayers' => $allPlayers,
             'totalPlayers' => $totalPlayers,
             'activeTotalPlayers' => $activeTotalPlayers
         ]);
@@ -114,5 +114,24 @@ class AdminController extends Controller
         $player->save();
         
         return redirect()->back()->with('success', 'Player deactivated successfully.');
+    }
+    
+    /**
+     * Reactivate a player.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function reactivatePlayer(Request $request)
+    {
+        $request->validate([
+            'player_id' => 'required|exists:players,uuid'
+        ]);
+        
+        $player = Player::find($request->player_id);
+        $player->is_active = true;
+        $player->save();
+        
+        return redirect()->back()->with('success', 'Player reactivated successfully.');
     }
 }
