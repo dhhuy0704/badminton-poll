@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'facebook' => [
+        'page_access_token' => env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+        'verify_token' => env('FACEBOOK_VERIFY_TOKEN'),
+        'app_secret' => env('FACEBOOK_APP_SECRET'),
+        'webhook_url' => env('FACEBOOK_WEBHOOK_URL', '/webhook/facebook'),
+    ],
+
 ];

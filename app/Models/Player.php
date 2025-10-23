@@ -45,6 +45,20 @@ class Player extends Model
      */
     protected $fillable = [
         'name',
+        'email',
+        'facebook_id',
+        'facebook_profile',
+        'facebook_connected_at',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'facebook_profile' => 'array',
+        'facebook_connected_at' => 'datetime',
     ];
 
     /**

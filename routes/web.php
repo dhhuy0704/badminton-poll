@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Facebook Messenger Webhook Routes
+Route::get('/webhook/facebook', [\App\Http\Controllers\FacebookMessengerController::class, 'verify']);
+Route::post('/webhook/facebook', [\App\Http\Controllers\FacebookMessengerController::class, 'webhook']);
+
 Route::get('/', [\App\Http\Controllers\PollController::class, 'index']);
 Route::get('/poll', [\App\Http\Controllers\PollController::class, 'index']);
 Route::post('/poll', [\App\Http\Controllers\VoteController::class, 'vote']);
@@ -26,4 +30,5 @@ Route::prefix('admin')->group(function () {
     Route::post('/close-poll', [\App\Http\Controllers\PollController::class, 'closePoll']);
     Route::post('/reopen-poll', [\App\Http\Controllers\PollController::class, 'reopenPoll']);
     Route::post('/update-poll', [\App\Http\Controllers\PollController::class, 'updatePoll']);
+    Route::post('/send-messenger-notification', [\App\Http\Controllers\AdminController::class, 'sendMessengerNotification']);
 });

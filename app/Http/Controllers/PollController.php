@@ -8,9 +8,18 @@ use Illuminate\Support\Carbon;
 use App\Models\Vote;
 use App\Models\Poll;
 use App\Models\Player;
+use App\Services\PollNotificationService;
+use Illuminate\Support\Facades\Log;
 
 class PollController extends AppController
 {
+    private $notificationService;
+
+    public function __construct(PollNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Main page of the poll
      *
@@ -71,6 +80,17 @@ class PollController extends AppController
         $poll->save();
 
         if ($poll->exists) {
+            // Send Facebook Messenger notifications to players
+            try {
+                $this->notificationService->notifyPlayersAboutNewPoll($poll);
+            } catch (\Exception $e) {
+                // Log error but don't fail the poll creation
+                Log::error('Failed to send Facebook notifications for new poll', [
+                    'poll_uuid' => $poll->uuid,
+                    'error' => $e->getMessage()
+                ]);
+            }
+
             if ($request->wantsJson() || $request->is('api/*') || app()->runningInConsole()) {
                 return ['success' => true, 'message' => 'Poll created successfully.', 'poll' => $poll];
             }

@@ -6,10 +6,18 @@ use Illuminate\Http\Request;
 use App\Models\Poll;
 use App\Models\Player;
 use App\Models\Vote;
+use App\Services\PollNotificationService;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
+    private $notificationService;
+
+    public function __construct(PollNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * Show the admin dashboard.
      *
@@ -133,5 +141,40 @@ class AdminController extends Controller
         $player->save();
         
         return redirect()->back()->with('success', 'Player reactivated successfully.');
+    }
+    
+    /**
+     * Send Facebook Messenger notification for a poll
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function sendMessengerNotification(Request $request)
+    {
+        $request->validate([
+            'poll_uuid' => 'required|exists:polls,uuid'
+        ]);
+        
+        $poll = Poll::find($request->poll_uuid);
+        
+        if (!$poll) {
+            return redirect()->back()->withErrors(['poll' => 'Poll not found.']);
+        }
+        
+        try {
+            $results = $this->notificationService->notifyPlayersAboutNewPoll($poll);
+            
+            $message = "Messenger notifications sent successfully! ";
+            $message .= "Sent to {$results['successful_notifications']} players.";
+            
+            if ($results['failed_notifications'] > 0) {
+                $message .= " Failed to send to {$results['failed_notifications']} players.";
+            }
+            
+            return redirect()->back()->with('success', $message);
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['messenger' => 'Failed to send notifications: ' . $e->getMessage()]);
+        }
     }
 }
